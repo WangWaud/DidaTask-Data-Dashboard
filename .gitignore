@@ -1,0 +1,19 @@
+# 依赖
+node_modules/
+
+# 敏感文件
+config.js
+.token.json
+Infor.txt
+
+# 个人数据
+*.csv
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/
+*.swp
+*.swo

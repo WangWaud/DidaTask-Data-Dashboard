@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>滴答清单 · 数据看板</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ───── 顶部导航 ───── -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="logo">✅ 滴答清单看板</span>
+    </div>
+    <div class="topbar-right">
+      <span id="csv-badge" class="csv-badge hidden">📎 已加载 CSV 历史数据</span>
+      <label class="btn btn-csv" title="导入滴答清单备份 CSV（含已完成任务）">
+        📂 导入 CSV
+        <input type="file" id="csv-file-input" accept=".csv" style="display:none" onchange="handleCsvImport(event)" />
+      </label>
+      <button id="btn-clear-csv" class="btn btn-danger hidden" onclick="clearCsv()">清除 CSV</button>
+    </div>
+  </header>
+
+  <!-- ───── 主体内容 ───── -->
+  <main class="main-content">
+
+    <!-- 时间维度切换栏 -->
+    <section class="filter-bar">
+      <div class="period-tabs">
+        <button class="tab active" data-period="day">日</button>
+        <button class="tab" data-period="week">周</button>
+        <button class="tab" data-period="month">月</button>
+        <button class="tab" data-period="quarter">季度</button>
+        <button class="tab" data-period="year">年</button>
+      </div>
+      <div class="date-nav">
+        <button class="nav-btn" id="btn-prev" onclick="navigate(-1)">‹</button>
+        <span id="date-label" class="date-label">—</span>
+        <button class="nav-btn" id="btn-next" onclick="navigate(1)">›</button>
+        <button class="nav-btn today-btn" onclick="goToday()">今天</button>
+        <input type="date" id="date-picker" class="date-picker" title="选择日期跳转" />
+      </div>
+      <div class="filter-extra" id="project-filter-bar">
+        <!-- 清单筛选按钮由 JS 动态注入 -->
+      </div>
+      <div class="filter-extra" id="tag-filter-bar">
+        <!-- 标签筛选按钮由 JS 动态注入 -->
+      </div>
+    </section>
+
+    <!-- 内容区域：左表格 + 右图表 -->
+    <div class="content-grid">
+
+      <!-- 左：任务表格 -->
+      <section class="table-section">
+        <div class="section-header">
+          <h2>任务列表</h2>
+          <span id="task-count" class="count-badge">0 条</span>
+        </div>
+        <div class="table-wrap">
+          <table id="task-table">
+            <thead>
+              <tr>
+                <th>任务名称</th>
+                <th>所属清单</th>
+                <th>标签</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>时长</th>
+                <th>优先级</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody id="task-tbody">
+              <tr class="empty-row">
+                <td colspan="8">请点击右上角「📂 导入 CSV」加载数据</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 右：图表区 -->
+      <section class="chart-section">
+        <!-- 饼图1：按文件夹 -->
+        <div class="chart-card">
+          <div class="section-header">
+            <h2>时间占比</h2>
+            <span class="chart-hint">按文件夹</span>
+          </div>
+          <div id="chart-pie-folder" class="chart-container"></div>
+        </div>
+        <!-- 饼图2：按清单 -->
+        <div class="chart-card">
+          <div class="section-header">
+            <h2>时间占比</h2>
+            <span class="chart-hint">按清单</span>
+          </div>
+          <div id="chart-pie-project" class="chart-container"></div>
+        </div>
+        <!-- 柱状图 -->
+        <div class="chart-card">
+          <div class="section-header">
+            <h2>时间趋势</h2>
+            <span class="chart-hint">各清单时间投入</span>
+          </div>
+          <div id="chart-bar" class="chart-container"></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ───── 加载遮罩 ───── -->
+  <div id="loading-mask" class="loading-mask hidden">
+    <div class="spinner"></div>
+    <p>数据加载中…</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
