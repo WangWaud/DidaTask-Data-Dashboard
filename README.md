@@ -3,7 +3,7 @@
 基于滴答清单（TickTick / Dida365）备份 CSV 文件的**本地时间统计看板**。  
 导入 CSV 即可查看任务的时间分布、清单占比和趋势分析，**无需联网**，数据完全本地。
 
-![Dashboard Preview](docs/preview.png)
+<img width="2158" height="1022" alt="看板Preview" src="https://github.com/user-attachments/assets/f8ac4bcc-715b-4514-8ef3-7b627bbbfd57" />
 
 ---
 
