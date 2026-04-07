@@ -12,13 +12,15 @@ const State = {
 
 // 清单 → 文件夹 的映射（与滴答清单结构对应）
 const FOLDER_MAP = {
-  '文献':    '学术研究',
-  '实验':    '学术研究',
-  '学术目标': '学术研究',
-  '工作':    '工作事务',
-  '助学':    '工作事务',
-  '提升':    '自我提升',
-  '阅读':    '自我提升',
+  '文献':    '📚 学术研究',
+  '实验':    '📚 学术研究',
+  '数据分析': '📚 学术研究',
+  '实验记录': '📚 学术研究',
+  '学术目标': '📚 学术研究',
+  '工作':    '👷 工作事务',
+  '助学':    '👷 工作事务',
+  '提升':    '🆙 自我提升',
+  '阅读':    '🆙 自我提升',
   // 运动健康、休闲娱乐、突发事件 为独立清单，不映射
 };
 
@@ -34,12 +36,14 @@ const PROJECT_COLORS = {
   // 学术研究
   '文献':    '#22c55e',   // 绿
   '实验':    '#EA3F4A',   // 红
+  '数据分析': '#8b5cf6',   // 紫
+  '实验记录': '#0ea5e9',   // 湖蓝
   '学术目标': '#ec4899',   // 粉
   // 工作事务
   '工作':    '#3b82f6',   // 蓝
   '助学':    '#f97316',   // 橙
   // 独立清单
-  '突发事件': '#f59e0b',   // 琥珀
+  '突发事件': '#283036',   // 深灰
   '休闲娱乐': '#848BAD',   // 灰紫
   // 自我提升
   '提升':    '#06b6d4',   // 青蓝
@@ -49,9 +53,9 @@ const PROJECT_COLORS = {
 
 // 文件夹颜色（比子清单深一些，用于内环）
 const FOLDER_COLORS = {
-  '学术研究': '#dc2626',   // 深红（与截图 📚 红色对应）
-  '工作事务': '#1d4ed8',   // 深蓝（与截图 👷 对应）
-  '自我提升': '#7c3aed',   // 深紫（与截图 🆙 对应）
+  '📚 学术研究': '#dc2626',   // 深红（与截图 📚 红色对应）
+  '👷 工作事务': '#1d4ed8',   // 深蓝（与截图 👷 对应）
+  '🆙 自我提升': '#7c3aed',   // 深紫（与截图 🆙 对应）
 };
 
 /** 去除字符串开头的 emoji 和空格，用于颜色表查找 */
@@ -124,15 +128,11 @@ function calcDurationHours(start, end) {
   return totalMinutes / 60; // 返回小时（分数形式，不做额外舍入）
 }
 
-/** 格式化时长：0.25 → "15m"，1.5 → "1h30m" */
+/** 格式化时长：0.25 → "0.25h"，1.5 → "1.5h" */
 function formatDuration(hours) {
   if (hours === null || hours === undefined) return '—';
-  const totalMinutes = Math.round(hours * 60);
-  const h = Math.floor(totalMinutes / 60);
-  const m = totalMinutes % 60;
-  if (h === 0) return `${m}m`;
-  if (m === 0) return `${h}h`;
-  return `${h}h${m}m`;
+  // 保留最多两位小数，去掉多余的 0
+  return `${Number(hours.toFixed(2))}h`;
 }
 
 /* ══════════════════════════════════════════
@@ -772,6 +772,44 @@ function renderCharts() {
     };
     projectMap[name].totalHours += hours;
   });
+
+  // ========== 计算并渲染周总结卡片 ==========
+  let totalWorkHours = 0;
+  let academicHours = 0;
+  let sportHours = 0;
+
+  Object.entries(projectMap).forEach(([pName, { totalHours, folderName }]) => {
+    const cleanF = stripEmoji(folderName);
+    const cleanP = stripEmoji(pName);
+
+    if (['学术研究', '工作事务', '自我提升', '突发事件'].includes(cleanF) || ['学术研究', '工作事务', '自我提升', '突发事件'].includes(cleanP)) {
+      totalWorkHours += totalHours;
+    }
+    if (cleanF === '学术研究' || cleanP === '学术研究') {
+      academicHours += totalHours;
+    }
+    if (cleanP === '运动健康' || cleanF === '运动健康') {
+      sportHours += totalHours;
+    }
+  });
+
+  const coreMetricsBox = document.getElementById('core-metrics');
+  if (coreMetricsBox) {
+    coreMetricsBox.innerHTML = `
+      <div style="flex: 1; min-width: 150px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+        <div style="font-size: 13px; color: #64748b; margin-bottom: 5px;">总工作时长</div>
+        <div style="font-size: 24px; font-weight: bold; color: #0f172a;">${formatDuration(totalWorkHours)}</div>
+      </div>
+      <div style="flex: 1; min-width: 150px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+        <div style="font-size: 13px; color: #64748b; margin-bottom: 5px;">学术研究时长</div>
+        <div style="font-size: 24px; font-weight: bold; color: #dc2626;">${formatDuration(academicHours)}</div>
+      </div>
+      <div style="flex: 1; min-width: 150px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+        <div style="font-size: 13px; color: #64748b; margin-bottom: 5px;">运动时长</div>
+        <div style="font-size: 24px; font-weight: bold; color: #eab308;">${formatDuration(sportHours)}</div>
+      </div>
+    `;
+  }
 
   // 按文件夹聚合（文件夹饼图用）
   // 有文件夹映射的清单 → 合并到文件夹名下，用文件夹颜色
