@@ -443,26 +443,10 @@ function updateCsvUI(hasData, count) {
    数据加载
 ══════════════════════════════════════════ */
 async function loadData() {
-  showLoading(true);
-  try {
-    const res = await fetch('/api/tasks/all');
-    if (res.status === 401) {
-      alert('请先点击「登录授权」');
-      return;
-    }
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-
-    State.projects = data.projects || [];
-    State.tasks = data.tasks || [];
-
-    applyFilters();
-  } catch (e) {
-    console.error('加载数据失败：', e);
-    alert('加载数据失败：' + e.message);
-  } finally {
-    showLoading(false);
-  }
+  // 纯 CSV 模式不加载远程数据
+  State.projects = [];
+  State.tasks = [];
+  applyFilters();
 }
 
 /* ══════════════════════════════════════════
