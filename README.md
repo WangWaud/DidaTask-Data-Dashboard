@@ -1,7 +1,10 @@
 # ✅ 滴答清单数据看板 (TickTick Dashboard)
 
-基于滴答清单（TickTick / Dida365）备份 CSV 文件的**本地时间统计看板**。  
+
+基于滴答清单（TickTick / Dida365）备份 CSV 文件的**本地时间统计看板**。
 导入 CSV 即可查看任务的时间分布、清单占比和趋势分析，**无需联网**，数据完全本地。
+
+> 🚩 **当前版本仅支持纯 CSV 模式，无需任何 API/OAuth 配置。**
 
 <img width="2158" height="1022" alt="看板Preview" src="https://github.com/user-attachments/assets/f8ac4bcc-715b-4514-8ef3-7b627bbbfd57" />
 
@@ -34,16 +37,7 @@ cd DidaTaskManager
 npm install
 ```
 
-### 3. 配置（可选）
-
-仅在需要 OAuth API 功能时才需要配置。**纯 CSV 模式无需任何配置**。
-
-```bash
-cp config.example.js config.js
-# 编辑 config.js 填入你的 OAuth 信息
-```
-
-### 4. 启动
+### 3. 启动
 
 ```bash
 npm start
@@ -51,7 +45,7 @@ npm start
 
 访问 [http://localhost:3000](http://localhost:3000) 即可。
 
-### 5. 导入数据
+### 4. 导入数据
 
 1. 登录 [dida365.com](https://dida365.com)
 2. 左上角头像 → 设置 → 账户 → 数据备份 → 生成备份 → 下载 `.csv`
@@ -64,7 +58,7 @@ npm start
 ```
 DidaTaskManager/
 ├── server.js           # Express 静态文件服务器
-├── config.example.js   # 配置模板（OAuth，可选）
+├── config.example.js   # 配置模板（已废弃，无需配置）
 ├── package.json
 ├── public/
 │   ├── index.html      # 页面结构
@@ -103,7 +97,14 @@ const FOLDER_COLORS = {
 };
 ```
 
+
 > 💡 清单名称如果带有 Emoji 前缀（如 `📄文献`），系统会自动去除 Emoji 后匹配颜色配置。
+
+---
+
+## 🛡️ 关于 OAuth/API
+
+本版本已完全移除 OAuth 及 API 相关功能，仅支持本地 CSV 文件导入统计。无需任何配置、授权或联网。
 
 ---
 
